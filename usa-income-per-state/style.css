@@ -1,0 +1,17 @@
+div#map {
+    width: 1000px;
+    margin: 0 auto;
+}
+
+div#plot {
+    width: 1300px;
+    margin: 0 auto;
+}
+
+.state {
+  cursor: pointer;
+}
+
+.state.active {
+  fill: orange;
+}
