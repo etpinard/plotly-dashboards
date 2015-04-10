@@ -1,8 +1,8 @@
 (function main() {
 
-var Stuff = {},
-    Map = {id: '#map'},
-    Plot = {id: '#plot'};
+var Map = {id: '#map'},
+    Plot = {id: '#plot'},
+    activeState = d3.select(null);
 
 Map.config = {
     width: 1000,
@@ -10,7 +10,7 @@ Map.config = {
     scale: 800,
     precision: 0.1,
     bgcolor: 'white',
-    bordercolor: 'blue',
+    bordercolor: 'black',
     borderwidth: 1.5
 };
 
@@ -120,14 +120,20 @@ Map.init = function init(topo, cd) {
         .attr("height", config.height);
 
     var formatter = d3.format('5s'),
-        active = d3.select(null),
         trace = cd.trace,
         fill = trace.fill;
 
     function handleClick(d) {
         var index = cd.trace.name.indexOf(d.name),
-            activeFill = d3.extent(fill);
-        activeFill[index] = '#fff';
+            activeFill = fill.map(function(i) { return i; });
+        activeFill[index] = 'orange';
+
+        Plot.post({
+            'task': 'restyle',
+            'update': {
+                'marker.color': [activeFill]
+            }
+        });
 
         Plot.post({
             'task': 'relayout',
@@ -150,9 +156,13 @@ Map.init = function init(topo, cd) {
             }
         });
 
-        if (active.node() === this) return reset();
-        active.classed("active", false);
-        active = d3.select(this).classed("active", true);
+        Plot.post({
+            'task': 'redraw'
+        });
+
+        if (activeState.node() === this) return reset();
+        activeState.classed("active", false);
+        activeState = d3.select(this).classed("active", true);
     }
 
     function handleZoom() {
@@ -163,8 +173,20 @@ Map.init = function init(topo, cd) {
     }
 
     function reset() {
-        active.classed("active", false);
-        active = d3.select(null);
+        activeState.classed("active", false);
+        activeState = d3.select(null);
+
+        d3.selectAll("path.state")
+            .each(function(d) {
+                d3.select(this).classed("active", false);
+        });
+
+        Plot.post({
+            'task': 'restyle',
+            'update': {
+                'marker.color': [fill]
+            }
+        });
 
         Plot.post({
             'task': 'relayout',
@@ -176,6 +198,10 @@ Map.init = function init(topo, cd) {
                  }]
 
             }
+        });
+
+        Plot.post({
+            'task': 'redraw'
         });
 
         Map.makeProjection();
@@ -237,8 +263,6 @@ Map.stylePaths = function stylePaths() {
 
 Plot.init = function init(cd) {
 
-    // TODO d3.select ...
-
     Plot.graphContentWindow = document.getElementById('plot-iframe').contentWindow;
 
     var pinger = setInterval(function() {
@@ -252,7 +276,15 @@ Plot.init = function init(cd) {
             console.log('Initial pong, frame is ready to receive');
             clearInterval(pinger);
             Plot.draw(cd);
+            Plot.post({
+                'task': 'listen',
+                'events': ['click']
+            });
         }
+        // TODO
+//         else if (message.type === 'click') {
+//             Plot.onClick(message);
+//         }
     }
 
     window.removeEventListener('message', messageListener);
@@ -260,8 +292,7 @@ Plot.init = function init(cd) {
 };
 
 Plot.post = function post(o) {
-    var plotlyDomain = 'https://plot.ly';
-    Plot.graphContentWindow.postMessage(o, plotlyDomain);
+    Plot.graphContentWindow.postMessage(o, 'https://plot.ly');
 };
 
 Plot.draw = function draw(cd) {
@@ -298,6 +329,20 @@ Plot.draw = function draw(cd) {
          }
     });
 
+
+};
+
+Plot.onClick = function onClick(message) {
+    var name = message.points[0].x;
+
+    console.log(name)
+
+    d3.selectAll("path.state")
+        .each(function(d) {
+            s = d3.select(this);
+            if (d.id === name) s.classed("active", true);
+            else s.classed("active", false);
+        });
 
 };
 
