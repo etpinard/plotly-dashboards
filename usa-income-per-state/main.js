@@ -276,7 +276,15 @@ Plot.init = function init(cd) {
             console.log('Initial pong, frame is ready to receive');
             clearInterval(pinger);
             Plot.draw(cd);
+            Plot.post({
+                'task': 'listen',
+                'events': ['click']
+            });
         }
+        // TODO
+//         else if (message.type === 'click') {
+//             Plot.onClick(message);
+//         }
     }
 
     window.removeEventListener('message', messageListener);
@@ -321,6 +329,20 @@ Plot.draw = function draw(cd) {
          }
     });
 
+
+};
+
+Plot.onClick = function onClick(message) {
+    var name = message.points[0].x;
+
+    console.log(name)
+
+    d3.selectAll("path.state")
+        .each(function(d) {
+            s = d3.select(this);
+            if (d.id === name) s.classed("active", true);
+            else s.classed("active", false);
+        });
 
 };
 
