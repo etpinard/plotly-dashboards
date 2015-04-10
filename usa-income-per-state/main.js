@@ -10,7 +10,7 @@ Map.config = {
     scale: 800,
     precision: 0.1,
     bgcolor: 'white',
-    bordercolor: 'blue',
+    bordercolor: 'black',
     borderwidth: 1.5
 };
 
@@ -237,8 +237,6 @@ Map.stylePaths = function stylePaths() {
 
 Plot.init = function init(cd) {
 
-    // TODO d3.select ...
-
     Plot.graphContentWindow = document.getElementById('plot-iframe').contentWindow;
 
     var pinger = setInterval(function() {
@@ -260,8 +258,7 @@ Plot.init = function init(cd) {
 };
 
 Plot.post = function post(o) {
-    var plotlyDomain = 'https://plot.ly';
-    Plot.graphContentWindow.postMessage(o, plotlyDomain);
+    Plot.graphContentWindow.postMessage(o, 'https://plot.ly');
 };
 
 Plot.draw = function draw(cd) {
