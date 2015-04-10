@@ -125,8 +125,15 @@ Map.init = function init(topo, cd) {
 
     function handleClick(d) {
         var index = cd.trace.name.indexOf(d.name),
-            activeFill = d3.extent(fill);
-        activeFill[index] = '#fff';
+            activeFill = fill.map(function(i) { return i; });
+        activeFill[index] = 'orange';
+
+        Plot.post({
+            'task': 'restyle',
+            'update': {
+                'marker.color': [activeFill]
+            }
+        });
 
         Plot.post({
             'task': 'relayout',
@@ -149,6 +156,9 @@ Map.init = function init(topo, cd) {
             }
         });
 
+        Plot.post({
+            'task': 'redraw'
+        });
 
         if (activeState.node() === this) return reset();
         activeState.classed("active", false);
@@ -166,6 +176,18 @@ Map.init = function init(topo, cd) {
         activeState.classed("active", false);
         activeState = d3.select(null);
 
+        d3.selectAll("path.state")
+            .each(function(d) {
+                d3.select(this).classed("active", false);
+        });
+
+        Plot.post({
+            'task': 'restyle',
+            'update': {
+                'marker.color': [fill]
+            }
+        });
+
         Plot.post({
             'task': 'relayout',
             'update': {
@@ -176,6 +198,10 @@ Map.init = function init(topo, cd) {
                  }]
 
             }
+        });
+
+        Plot.post({
+            'task': 'redraw'
         });
 
         Map.makeProjection();
