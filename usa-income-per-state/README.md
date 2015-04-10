@@ -1,5 +1,7 @@
 ## USA median income per state
 
+Page: http://etpinard.github.io/plotly-dashboards/usa-income-per-state/
+
 ### Resources
 
 - census data: http://www.census.gov/hhes/www/income/data/statemedian/
