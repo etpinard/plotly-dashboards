@@ -1,8 +1,8 @@
 (function main() {
 
-var Stuff = {},
-    Map = {id: '#map'},
-    Plot = {id: '#plot'};
+var Map = {id: '#map'},
+    Plot = {id: '#plot'},
+    activeState = d3.select(null);
 
 Map.config = {
     width: 1000,
@@ -120,7 +120,6 @@ Map.init = function init(topo, cd) {
         .attr("height", config.height);
 
     var formatter = d3.format('5s'),
-        active = d3.select(null),
         trace = cd.trace,
         fill = trace.fill;
 
@@ -150,9 +149,10 @@ Map.init = function init(topo, cd) {
             }
         });
 
-        if (active.node() === this) return reset();
-        active.classed("active", false);
-        active = d3.select(this).classed("active", true);
+
+        if (activeState.node() === this) return reset();
+        activeState.classed("active", false);
+        activeState = d3.select(this).classed("active", true);
     }
 
     function handleZoom() {
@@ -163,8 +163,8 @@ Map.init = function init(topo, cd) {
     }
 
     function reset() {
-        active.classed("active", false);
-        active = d3.select(null);
+        activeState.classed("active", false);
+        activeState = d3.select(null);
 
         Plot.post({
             'task': 'relayout',
