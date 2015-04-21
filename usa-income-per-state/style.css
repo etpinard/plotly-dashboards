@@ -15,3 +15,16 @@ div#plot {
 .state.active {
   fill: orange;
 }
+
+.hover {
+    position: absolute;
+    text-align: center;
+    width: 100px;
+    height: 30px;
+    padding: 3px;
+    font-size: 15px;
+    background: #FFFFE0;
+    border: 1px;
+    border-radius: 4px;
+    pointer-events: none;
+}
