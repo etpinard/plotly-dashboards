@@ -114,12 +114,21 @@ Map.init = function init(topo, cd) {
     Map.makeProjection();
     Map.makePath();
 
+    var hoverDiv = d3.select(Map.id)
+        .append('div')
+        .attr('class', 'hover')
+        .attr('opacity', 0.0);
+
     var svg = d3.select(Map.id)
         .append('svg')
         .attr("width", config.width)
         .attr("height", config.height);
 
-    var formatter = d3.format('5s'),
+    function format(d) {
+        var formatter = d3.format('5s');
+        return formatter(d3.round(d));
+    }
+
         trace = cd.trace,
         fill = trace.fill;
 
@@ -138,7 +147,7 @@ Map.init = function init(topo, cd) {
         Plot.post({
             'task': 'relayout',
             'update': {
-                title: d.fullname + ': ' + formatter(d3.round(d.median)),
+                title: d.fullname + ': ' + format(d.median),
                 annotations: [{
                     xref: 'x',
                     x: d.name,
@@ -154,10 +163,6 @@ Map.init = function init(topo, cd) {
                     }
                 }]
             }
-        });
-
-        Plot.post({
-            'task': 'redraw'
         });
 
         if (activeState.node() === this) return reset();
@@ -200,15 +205,21 @@ Map.init = function init(topo, cd) {
             }
         });
 
-        Plot.post({
-            'task': 'redraw'
-        });
-
         Map.makeProjection();
         Map.makePath();
         zoom.translate(Map.projection.translate());
         zoom.scale(Map.projection.scale());
         Map.drawPaths();
+    }
+
+    function mouseover(d) {
+        hoverDiv.html(d.fullname + "<br/>" + format(d.median))
+            .style('left', (d3.event.pageX) + 'px')
+            .style('top', (d3.event.pageY -30) + 'px');
+    }
+
+    function mouseout(d) {
+        hoverDiv.attr('opacity', 0.0);
     }
 
     var scale = config.scale,
@@ -227,7 +238,9 @@ Map.init = function init(topo, cd) {
         .on("click", handleClick)
         .call(zoom)
         .on("dblclick.zoom", null)
-        .on("dblclick", reset);
+        .on("dblclick", reset)
+        .on("mouseover", mouseover)
+        .on("mouseout", mouseout);
 
     svg.append("g")
         .attr("class", "lakes")
