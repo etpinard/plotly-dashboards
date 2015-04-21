@@ -156,10 +156,6 @@ Map.init = function init(topo, cd) {
             }
         });
 
-        Plot.post({
-            'task': 'redraw'
-        });
-
         if (activeState.node() === this) return reset();
         activeState.classed("active", false);
         activeState = d3.select(this).classed("active", true);
@@ -198,10 +194,6 @@ Map.init = function init(topo, cd) {
                  }]
 
             }
-        });
-
-        Plot.post({
-            'task': 'redraw'
         });
 
         Map.makeProjection();
