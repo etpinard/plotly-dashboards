@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<body>
+
+<script src="http://d3js.org/d3.v3.min.js"></script>
+
+<div class="dashboard"> 
+
+    <iframe id="plot"
+            src="https://plot.ly/~playground/7.embed"
+            style="width:1000px; height:600px; border:none"
+            seamless>
+    </iframe>
+
+    <div class="control-row">
+        Wafer ID: <select id="waferId"></select>
+    </div>
+    <div class="control-row">
+        Device ID: <select id="deviceId"></select>
+    </div>
+    <div class="control-row">
+        Param name: <select id="paramName"></select>
+    </div>
+
+</div>
+
+<script src='./main.js'></script>
+
+</body>
